@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Assign Page Permissions</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Navbar Styling */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo img {
+            height: 40px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Page Layout Styling */
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 720px;
+            background-color: #fff;
+            margin: 30px auto;
+            padding: 40px 45px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 30px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #pagesCheckboxes {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        #pagesCheckboxes label {
+            background-color: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        #pagesCheckboxes input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: block;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            color: green;
+            font-weight: 500;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 20px auto 0;
+            padding: 10px 18px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+            max-width: 200px;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav>
+    <div class="logo">
+        <a href="/index">
+            <img src="/logo/logo.png" alt="AVIS Logo">
+        </a>
+    </div>
+    <ul>
+        <li><a href="/index">Home</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</nav>
+
+<!-- Back to Home Button -->
+<!-- <div style="text-align: center;">
+    <a href="/index" class="back-link">← Back to Home</a>
+</div> -->
+
+<!-- Permissions Assignment Form -->
+<div class="container">
+    <h2>Assign Page Permissions</h2>
+
+    <label for="userSelect">Select User:</label>
+    <select id="userSelect" name="userId">
+        <option value="" disabled selected>Select a user</option>
+        <th:block th:each="user : ${users}">
+            <option th:value="${user.id}" th:text="${user.email}"></option>
+        </th:block>
+    </select>
+
+    <form id="permissionsForm" style="display:none;">
+        <label>Available Pages:</label>
+        <div id="pagesCheckboxes">
+            <th:block th:each="page : ${allPages}">
+                <label>
+                    <input type="checkbox" name="pages" th:value="${page}"/>
+                    <span th:text="${page}"></span>
+                </label>
+            </th:block>
+        </div>
+        <button type="submit">Save Permissions</button>
+    </form>
+
+    <div id="message"></div>
+</div>
+
+<script>
+    $('#userSelect').change(function () {
+        let userId = $(this).val();
+        if (!userId) {
+            $('#permissionsForm').hide();
+            return;
+        }
+        $.get('/admin/user-permissions', {userId: userId}, function (assignedPages) {
+            $('#permissionsForm').show();
+            $('#pagesCheckboxes input[type=checkbox]').prop('checked', false);
+            assignedPages.forEach(function (page) {
+                $('#pagesCheckboxes input[type=checkbox][value="' + page + '"]').prop('checked', true);
+            });
+        });
+    });
+
+    $('#permissionsForm').submit(function (e) {
+        e.preventDefault();
+        let userId = $('#userSelect').val();
+        let pages = $('#pagesCheckboxes input[type=checkbox]:checked').map(function () {
+            return this.value;
+        }).get();
+
+        $.ajax({
+            url: '/admin/save-permissions',
+            type: 'POST',
+            data: {userId: userId, pages: pages},
+            traditional: true,
+            success: function (response) {
+                $('#message').text(response);
+                setTimeout(() => $('#message').text(''), 3000);
+            },
+            error: function (xhr, status, error) {
+                $('#message').text('Error saving permissions: ' + error);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

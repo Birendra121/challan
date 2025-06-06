@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard | AVIS</title>
+
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Animate.css CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo img {
+            height: 40px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0; padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            flex: 1;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin: 0;
+            color: #333;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        .module-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .module {
+            background-color: #ffffff;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            width: 240px;
+            height: 180px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #007bff;
+            transition: color 0.3s ease;
+        }
+
+        .module a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .module:hover {
+            background: linear-gradient(135deg, #1d8cf8, #3358f4);
+            color: white;
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+
+        .module:hover i,
+        .module:hover a {
+            color: #ffffff;
+        }
+
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 10;
+        }
+
+        .alert-success {
+            color: green;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<!-- 
+    <nav>
+        <div class="logo">
+            <a th:href="@{/challan/home}">
+                <img th:src="@{/logo/logo.png}" alt="AVIS Logo" />
+            </a>
+        </div>
+        <ul>
+            <li><a th:href="@{/challan/home}">Home</a></li>
+            <li><a th:href="@{/logout}">Logout</a></li>
+            <li><a th:href="@{/change-password}">Change Password</a></li>
+            <li><a th:href="@{/register}">Register / New User</a></li>
+        </ul>
+    </nav> -->
+    
+    <nav>
+    <div class="logo">
+        <a th:href="@{/challan/home}">
+            <img th:src="@{/logo/logo.png}" alt="AVIS Logo" />
+        </a>
+    </div>
+    <ul>
+        <li th:if="${isAdmin or allowedPages.contains('/challan/home')}">
+            <a th:href="@{/challan/home}">Home</a>
+        </li>
+        <li><a th:href="@{/logout}">Logout</a></li>
+        <li><a th:href="@{/change-password}">Change Password</a></li>
+        <li th:if="${isAdmin}">
+            <a th:href="@{/register}">Register / New User</a>
+        </li>
+    </ul>
+</nav>
+    
+
+    <div th:if="${successMessage}" class="alert-success">
+        <p th:text="${successMessage}"></p>
+    </div>
+
+    <div class="container">
+        <div class="hero animate__animated animate__fadeInDown">
+            <h1>Welcome to AVIS</h1>
+            <p>Your one-stop solution for all your needs. Choose Your Module</p>
+        </div>
+
+        <!-- <div class="module-container">
+            <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0s;">
+                <i class="fas fa-truck-loading"></i>
+                <a th:href="@{/challan/home}">Challan Details Module</a>
+            </div>
+
+            <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <i class="fas fa-id-card"></i>
+                <a th:href="@{/trc/trcindex}">RC Details Module</a>
+            </div>
+
+            <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <i class="fas fa-user-plus"></i>
+                <a th:href="@{/customer}">Customer Entry Module</a>
+            </div>
+            
+            <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <i class="fas fa-user-plus"></i>
+                <a th:href="@{/admin/logo/upload}">Change Logo for Customer Module</a>
+            </div>
+            
+             <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <i class="fas fa-user-plus"></i>
+                <a th:href="@{/admin/assign-permissions}">Rights Permission Module</a>
+            </div> 
+        </div>
+    </div> -->
+
+	<div class="module-container">
+
+    <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0s;"
+         th:if="${isAdmin or allowedPages.contains('/challan/home')}">
+        <i class="fas fa-truck-loading"></i>
+        <a th:href="@{/challan/home}">Challan Details Module</a>
+    </div>
+
+    <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.1s;"
+         th:if="${isAdmin or allowedPages.contains('/trc/trcindex')}">
+        <i class="fas fa-id-card"></i>
+        <a th:href="@{/trc/trcindex}">RC Details Module</a>
+    </div>
+
+    <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.2s;"
+         th:if="${isAdmin or allowedPages.contains('/customer')}">
+        <i class="fas fa-user-plus"></i>
+        <a th:href="@{/customer}">Customer Entry Module</a>
+    </div>
+
+    <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.3s;"
+         th:if="${isAdmin or allowedPages.contains('/admin/logo/upload')}">
+        <i class="fas fa-image"></i>
+        <a th:href="@{/admin/logo/upload}">Change Logo for Customer Module</a>
+    </div>
+
+    <div class="module animate__animated animate__fadeInUp" style="animation-delay: 0.4s;"
+         th:if="${isAdmin or allowedPages.contains('/admin/assign-permissions')}">
+        <i class="fas fa-user-shield"></i>
+        <a th:href="@{/admin/assign-permissions}">Rights Permission Module</a>
+    </div>
+
+</div>
+	
+	
+    <footer>
+         <!-- &copy; 2024 AVIS. All rights reserved.  -->
+    </footer>
+</body>
+</html>

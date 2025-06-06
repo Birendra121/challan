@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Register - AVIS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background-color: #f4f4f4;
+}
+
+nav {
+	background-color: #333;
+	color: white;
+	padding: 15px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+nav .logo img {
+	height: 40px;
+}
+
+nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+}
+
+nav ul li {
+	margin-left: 20px;
+}
+
+nav ul li a {
+	color: white;
+	text-decoration: none;
+	font-size: 1rem;
+}
+
+nav ul li a:hover {
+	text-decoration: underline;
+}
+
+.container {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+}
+
+.form-box {
+	background-color: #fff;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+	width: 100%;
+	max-width: 400px;
+}
+
+h1 {
+	text-align: center;
+	color: #333;
+	margin-bottom: 20px;
+}
+
+.form-group {
+	margin-bottom: 15px;
+}
+
+label {
+	display: block;
+	margin-bottom: 5px;
+	color: #555;
+}
+
+input {
+	width: 100%;
+	padding: 10px;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+button, .link-button {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	font-size: 1rem;
+	border-radius: 4px;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+}
+
+button:hover, .link-button:hover {
+	background-color: #0056b3;
+}
+
+.error {
+	color: red;
+	text-align: center;
+	margin-top: 10px;
+}
+
+.alert {
+	text-align: center;
+	margin-bottom: 15px;
+}
+select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    flex: 1;
+}
+
+
+footer {
+	background-color: #333;
+	color: white;
+	text-align: center;
+	padding: 10px 0;
+}
+</style>
+</head>
+<body>
+
+	<nav>
+		<div class="logo">
+			<a th:href="@{/challan/home}"> <img src="/logo/logo.png" alt="AVIS Logo">
+			</a>
+		</div>
+		<ul>
+			<!-- <li><a th:href="@{/challan/home}">Home</a></li> -->
+			
+	<!-- Show this link only for non-admin users -->
+        <li th:if="${!isAdmin}">
+            <a th:href="@{/user-home}">User Home</a>
+        </li>
+        		
+    <li th:if="${isAdmin or allowedPages.contains('/challan/home')}">
+        <a th:href="@{/challan/home}">Home</a>
+    </li>
+			<li><a th:href="@{/logout}">Logout</a></li>
+		</ul>
+	</nav>
+
+	<div class="container">
+		<div class="form-box">
+			<h1>Register</h1>
+
+			<div th:if="${successMessage}" class="alert" style="color: green;">
+				<p th:text="${successMessage}"></p>
+			</div>
+
+			<div th:if="${error}" class="alert" style="color: red;">
+				<p th:text="${error}"></p>
+			</div>
+
+			<form th:action="@{/register}" th:object="${user}" method="post">
+				<div class="form-group">
+					<label for="email">Email:</label> <input type="email"
+						th:field="*{email}" id="email" required placeholder="Enter Email">
+				</div>
+				<div class="form-group">
+					<label for="password">Password:</label> <input type="password"
+						th:field="*{password}" id="password" required
+						placeholder="Enter Password">
+				</div>
+				<div class="form-group">
+					<label for="username">Username:</label> <input type="text"
+						th:field="*{username}" id="username" required
+						placeholder="Enter Username">
+				</div>
+				<!-- <div class="form-group">
+                <label for="role">Role:</label>
+                <input type="text" th:field="*{role}" id="role" required placeholder="Enter Role (admin/user)">
+            </div> -->
+				<div class="form-group">
+					<label for="role">Role:</label> <select id="role"
+						th:field="*{role}" required>
+						<option value="">-- Select Role --</option>
+						<option value="USER">User</option>
+						<option value="ADMIN">Admin</option>
+					</select>
+				</div>
+
+
+				<div class="form-group"
+					style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+					<button type="submit">Register</button>
+					<!-- <a class="link-button" th:href="@{/login}">Go to Login</a> -->
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+	<footer> &copy; 2024 AVIS. All rights reserved. </footer>
+
+</body>
+</html>

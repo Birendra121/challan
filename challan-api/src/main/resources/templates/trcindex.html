@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vehicle RC Details</title>
+    <!-- Font Awesome for icons (if needed) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    <style>
+    /* Paste this nav style block from dashboard */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo img {
+            height: 40px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0; padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+    
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+         .header {
+           /*  background-color: #007bff; */
+            /* color: white; */
+            padding: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+ 
+        .page-wrapper {
+            max-width: 1300px;
+            margin: 10px auto;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card {
+            background: #fefefe;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 18px 22px;
+            transition: 0.3s;
+            
+    		
+        }
+		.card h2 {
+    font-size: 20px; /* Smaller heading */
+    margin-bottom: 15px;
+}
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], input[type="file"] {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a.download-link {
+            display: inline-block;
+            margin-top: 12px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        a.download-link:hover {
+            text-decoration: underline;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ccc;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .error {
+            color: red;
+            margin-top: 12px;
+        }
+
+        .success {
+            color: green;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ ADD NAVBAR HERE -->
+<nav>
+    <div class="logo">
+        <a th:href="@{/challan/home}">
+            <img th:src="@{/logo/logo.png}" alt="AVIS Logo" />
+        </a>
+    </div>
+    <ul>
+    
+    	 <!-- Show this link only for non-admin users -->
+        <li th:if="${!isAdmin}">
+            <a th:href="@{/user-home}">User Home</a>
+        </li>
+    	
+        <!-- <li><a th:href="@{/challan/home}">Home</a></li> -->
+        <li th:if="${isAdmin or allowedPages.contains('/challan/home')}">
+            <a th:href="@{/challan/home}">Home</a>
+        </li>
+        <!--  <li><a href="#index" th:href="@{/index}">Index</a></li> -->
+         <li th:if="${isAdmin or allowedPages.contains('/index')}">
+        <a th:href="@{/index}">Index</a>
+        </li>
+        
+        <li><a th:href="@{/logout}">Logout</a></li>
+        <!-- <li><a th:href="@{/change-password}">Change Password</a></li>
+        <li><a th:href="@{/register}">Register / New User</a></li> -->
+    </ul>
+</nav>
+
+<!-- Top Page Label -->
+    <div class="header">
+        Transfer RC Check System
+    </div>
+    <div class="page-wrapper">
+        <div class="container">
+
+            <!-- Upload Excel Section -->
+            <div class="card">
+                <h2>Upload Vehicle Numbers Excel</h2>
+                <form method="post" action="/trc/trc-file-upload" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Select Excel File (.xlsx):</label>
+                        <input type="file" name="file" accept=".xlsx" required />
+                    </div>
+                    <button type="submit">Upload</button>
+                </form>
+
+                <div th:if="${showDownloadLink}" class="success">
+                    <p>✅ File processed successfully.</p>
+                    <a class="download-link" href="/trc/download-last-excel" target="_blank">📥 Download Last Processed RC Details</a>
+                </div>
+
+                <div>
+                    <a class="download-link" href="/trc/download-excel">📥 Download All as Excel</a>
+                </div>
+            </div>
+			
+			
+			
+            <!-- Single RC Fetch Section -->
+            <div class="card">
+                <h2>Fetch Single Vehicle RC Details</h2>
+                <form th:action="@{/trc/fetchSingleRC}" method="post">
+                    <div class="form-group">
+                        <label for="vehicleNumber">Enter Vehicle Number:</label>
+                        <input type="text" id="vehicleNumber" name="vehicleNumber" required 
+                        style="text-transform:uppercase" 
+                        oninput="this.value = this.value.toUpperCase()" />
+                    </div>
+                    <button type="submit">Fetch RC Details</button>
+                </form>
+
+				<!-- Display error message from flash attributes -->
+            <div th:if="${error}" class="error">
+                <p th:text="${error}"></p>
+            </div>
+				
+                
+			<!-- Display fetched RC detail -->
+			
+                <div th:if="${singleRcDetail}">
+                    <h3>RC Details for Vehicle: <span th:text="${singleRcDetail.registrationNumber}"></span></h3>
+                    <div class="table-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                            	<th>Reg. No.</th>
+                                <th>Status</th>
+                                <th>Owner</th>
+                                <th>Model</th>
+                                <th>Fuel</th>
+                                <th>Color</th>
+                                <th>Reg Date</th>
+                                <th>Expiry</th>
+                                <th>Insurance Company</th>
+                                <th>Policy No</th>
+                                <th>Insurance Expiry</th>
+                                <th>RTO Code</th>
+                                <th>Vehicle Age</th>
+                                <th>City</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            	<td th:text="${singleRcDetail.registrationNumber}"></td>
+                                <td th:text="${singleRcDetail.status}"></td>
+                                <td th:text="${singleRcDetail.ownerName}"></td>
+                                <td th:text="${singleRcDetail.vehicleMakeModel}"></td>
+                                <td th:text="${singleRcDetail.fuel}"></td>
+                                <td th:text="${singleRcDetail.color}"></td>
+                                <td th:text="${singleRcDetail.registrationDate}"></td>
+                                <td th:text="${singleRcDetail.expiryDate}"></td>
+                                <td th:text="${singleRcDetail.insuranceCompany}"></td>
+                                <td th:text="${singleRcDetail.insurancePolicyNumber}"></td>
+                                <td th:text="${singleRcDetail.insuranceExpiryDate}"></td>
+                                <td th:text="${singleRcDetail.rtoCode}"></td>
+                                <td th:text="${singleRcDetail.vehicleAge}"></td>
+                                <td th:text="${singleRcDetail.city}"></td>
+                                <td th:text="${singleRcDetail.state}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

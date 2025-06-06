@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Upload Company Logos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            width: 100%;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30px 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+            z-index: 1000;
+            min-height: 70px; /* Added min-height for more thickness */
+        }
+
+        .logo {
+            height: 40px;
+        }
+        
+        
+
+        .logo-left {
+            margin-right: auto;
+        }
+
+        .logo-right {
+            margin-left: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 8px 12px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: #575757;
+            border-radius: 5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .upload-container {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            margin: 10px 0 20px;
+            width: 100%;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .current-logos {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .current-logos div {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .current-logos img {
+            max-height: 60px;
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 4px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <th:block th:if="${navLogos != null}">
+        <img th:src="@{${navLogos.leftLogoPath}}" alt="Left Logo" class="logo logo-left" />
+        <img th:src="@{${navLogos.rightLogoPath}}" alt="Right Logo" class="logo logo-right" />
+    </th:block>
+    <div class="nav-links">
+        <a href="#" th:href="@{/challan/home}">Home</a>
+        <a href="#" th:href="@{/index}">Index</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#" th:href="@{/logout}">Logout</a>
+    </div>
+</div>
+
+<!-- Main Upload Section -->
+<div class="main-content">
+    <div class="upload-container">
+        <h2>Upload Company Logos</h2>
+
+        <form th:action="@{/admin/logo/upload}" method="post" enctype="multipart/form-data">
+            <div>
+                <label for="leftLogoFile">Left Logo:</label><br/>
+                <input type="file" id="leftLogoFile" name="leftLogoFile" accept="image/*" required />
+            </div>
+            <div>
+                <label for="rightLogoFile">Right Logo:</label><br/>
+                <input type="file" id="rightLogoFile" name="rightLogoFile" accept="image/*" required />
+            </div>
+            <button type="submit">Upload Logos</button>
+        </form>
+
+        <div class="current-logos" th:if="${currentLogo != null}">
+            <div>
+                <p>Current Left Logo:</p>
+                <img th:src="@{${currentLogo.leftLogoPath}}" alt="Left Logo" />
+            </div>
+            <div>
+                <p>Current Right Logo:</p>
+                <img th:src="@{${currentLogo.rightLogoPath}}" alt="Right Logo" />
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
